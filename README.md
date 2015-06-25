@@ -1,24 +1,24 @@
-# SignalR �̊w�K
+﻿# SignalR の学習
 
-SignalR �� Web �ɑo�����̃��A���^�C���ʐM���\�ɂ��郉�C�u�����Ƃ��č쐬����܂������A.NET Framework �̃N���C�A���g���p�ӂ���Ă��܂��̂ŁAWeb �ȊO�ł��g�p�ł��܂��B
+SignalR は Web に双方向のリアルタイム通信を可能にするライブラリとして作成されましたが、.NET Framework のクライアントが用意されていますので、Web 以外でも使用できます。
 
-�Ƃ������ƂŁA�ȒP�ȃT���v���v���O�����ł�����Ă݂܂��B
+ということで、簡単なサンプルプログラムでも作ってみます。
 
-## ������
+## 作るもの
 
-���A���^�C���ʐM�Ȃ̂ŁA�������PC�� �\��/����/���� ��\�������Ă݂܂��B
-�\���� Web �ōs���܂��B
-�T�[�o�� IIS �� SignalR �𓮍삳���܂��B_(SignalR �� ASP.NET �̒���) Self-Host �ł��\_
-�\��A���т̍X�V�� .NET �̃R���\�[���A�v������s���悤�ɂ��܂��B
+リアルタイム通信なので、複数台のPCに 予定/実績/差異 を表示させてみます。
+表示は Web で行います。
+サーバは IIS で SignalR を動作させます。_(SignalR は ASP.NET の仲間) Self-Host でも可能_
+予定、実績の更新は .NET のコンソールアプリから行うようにします。
 
 ## xxx
 
-### �܂��� SignalR �̃T�[�o����
+### まずは SignalR のサーバから
 
-VS2013 �̐V�K�v���W�F�N�g�ŁAASP.NET Web �A�v���P�[�V���� ��I�� �e���v���[�g�� Empty �ō쐬�B
-NuGet �� Microsoft.AspNet.SignalR ���C���X�g�[���B
-Hubs �t�H���_��ǉ����āAPlanHub.cs ��ǉ��B
-�ǉ����� PlanHub.cs �͂���B
+VS2013 の新規プロジェクトで、ASP.NET Web アプリケーション を選び テンプレートを Empty で作成。
+NuGet で Microsoft.AspNet.SignalR をインストール。
+Hubs フォルダを追加して、PlanHub.cs を追加。
+追加した PlanHub.cs はこれ。
 ``` csharp
 using Microsoft.AspNet.SignalR;
 
@@ -43,13 +43,13 @@ namespace PaSignalR.Hubs
     }
 }
 ```
-�v��A���т͋��L�����o�ŕێ��BGetPlan ���Ă΂��� Updated ���Ăяo���Čv��Ǝ��т�ʒm�B
-Update ���Ă΂��ƁA�v��Ǝ��т�ێ����AUpdated ���Ăяo���ăI�E���Ԃ�����B
-GetPlan �͌Ă΂�Ă��N���C�A���g�����ɁAUpdate �͑S�ẴN���C�A���g�� Updated ���Ăяo���܂��B
+計画、実績は共有メンバで保持。GetPlan が呼ばれると Updated を呼び出して計画と実績を通知。
+Update が呼ばれると、計画と実績を保持し、Updated を呼び出してオウム返しする。
+GetPlan は呼ばれてたクライアントだけに、Update は全てのクライアントに Updated を呼び出します。
 
-��́AStartup �N���X������āASigralR ���@�\����悤�ɂ����肵�܂����A�قڒ�^�I�ȍ�Ƃł��B
+後は、Startup クラスを作って、SigralR が機能するようにしたりしますが、ほぼ定型的な作業です。
 
-���ɁA�u���E�U�ɕ\������ html �ł����AMVC�ł�WebForms�ł��Ȃ��ÓI�ȃt�@�C����OK�ł��B
+次に、ブラウザに表示する html ですが、MVCでもWebFormsでもなく静的なファイルでOKです。
 
 ``` html
 <!DOCTYPE html>
@@ -60,9 +60,9 @@ GetPlan �͌Ă΂�Ă��N���C�A���g�����ɁAUpdate �͑S�ẴN���C�A���g�� Updated ��
 </head>
 <body>
     <table border="0">
-        <tr><th>�\��</th><td><span id="plan" /></td></tr>
-        <tr><th>����</th><td><span id="result" /></td></tr>
-        <tr><th>����</th><td><span id="diff" /></td></tr>
+        <tr><th>予定</th><td><span id="plan" /></td></tr>
+        <tr><th>実績</th><td><span id="result" /></td></tr>
+        <tr><th>差異</th><td><span id="diff" /></td></tr>
     </table>
     <script src="Scripts/jquery-1.6.4.min.js"></script>
     <script src="Scripts/jquery.signalR-2.2.0.min.js"></script>
@@ -83,11 +83,11 @@ GetPlan �͌Ă΂�Ă��N���C�A���g�����ɁAUpdate �͑S�ẴN���C�A���g�� Updated ��
 </body>
 </html>
 ```
-�T�[�o�Ɍq��������AGetPlan ���Ăяo���Č��݂̒l���擾���Ă��܂��B
-GetPlan�@���Ăяo������A�l���ύX������ Updated ���Ăяo����܂��̂ŁA�e�X��text�����������Ă��܂��B
+サーバに繋がった後、GetPlan を呼び出して現在の値を取得しています。
+GetPlan　を呼び出したり、値が変更されると Updated が呼び出されますので、各々のtextを書き換えています。
 
-���ɁA�l���X�V����R���\�[���A�v���ł����A�\�����[�V�����ɃR���\�[���A�v���̃v���W�F�N�g��ǉ����܂��B
-����́ASignalR �̃T���v���ł��̂ŁA�R�}���h���C�������Ɍv��Ǝ��т��w�肵�ăT�[�o�ɒʒm���ďI������P���ȃv���O�����Ƃ��܂��B
+次に、値を更新するコンソールアプリですが、ソリューションにコンソールアプリのプロジェクトを追加します。
+今回は、SignalR のサンプルですので、コマンドライン引数に計画と実績を指定してサーバに通知して終了する単純なプログラムとします。
 ``` csharp
 using System;
 using Microsoft.AspNet.SignalR.Client;
