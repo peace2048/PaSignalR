@@ -1,24 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
-using Microsoft.AspNet.SignalR.Client.Hubs;
 
 namespace PsSignalR.CommandLine
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var conn = new Microsoft.AspNet.SignalR.Client.HubConnection("http://localhost:55740/");
             var hub = conn.CreateHubProxy("planHub");
-            hub.On<int, int>("Updated", (newPlan, newResult) =>
+            hub.On<int, int>("Updated", (plan, result) =>
             {
-                Console.WriteLine("PLAN  :{0}", newPlan);
-                Console.WriteLine("RESULT:{0}", newResult);
-                Console.WriteLine("DIFF  :{0}", newResult - newPlan);
+                Console.WriteLine("PLAN  :{0}", plan);
+                Console.WriteLine("RESULT:{0}", result);
+                Console.WriteLine("DIFF  :{0}", result - plan);
             });
             conn.Start().ContinueWith(t =>
             {
