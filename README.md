@@ -1,17 +1,15 @@
 ﻿# SignalR の学習
 
-SignalR は Web に双方向のリアルタイム通信を可能にするライブラリとして作成されましたが、.NET Framework のクライアントが用意されていますので、Web 以外でも使用できます。
+SignalR は Web に双方向のリアルタイム通信を可能にするライブラリとして作成されましたが、.NET Framework のクライアントも用意されていますので、Web 以外にも使用できます。
 
-ということで、簡単なサンプルプログラムでも作ってみます。
+ということで、簡単なサンプルプログラムを作ってみます。
 
 ## 作るもの
 
-リアルタイム通信なので、複数台のPCに 予定/実績/差異 を表示させてみます。
-表示は Web で行います。
-サーバは IIS で SignalR を動作させます。_(SignalR は ASP.NET の仲間) Self-Host でも可能_
-予定、実績の更新は .NET のコンソールアプリから行うようにします。
+push通知が可能なので、複数台のPCに 予定/実績/差異 を表示させ、同時に値が変わることを確認してみます。
+表示は Web で行い、サーバは IIS で SignalR を動作させます。
 
-## xxx
+予定、実績の更新は .NET のコンソールアプリから行うようにします。
 
 ### まずは SignalR のサーバから
 
@@ -19,6 +17,7 @@ VS2013 の新規プロジェクトで、ASP.NET Web アプリケーション を
 NuGet で Microsoft.AspNet.SignalR をインストール。
 Hubs フォルダを追加して、PlanHub.cs を追加。
 追加した PlanHub.cs はこれ。
+
 ``` csharp
 using Microsoft.AspNet.SignalR;
 
@@ -43,9 +42,10 @@ namespace PaSignalR.Hubs
     }
 }
 ```
+
 計画、実績は共有メンバで保持。GetPlan が呼ばれると Updated を呼び出して計画と実績を通知。
-Update が呼ばれると、計画と実績を保持し、Updated を呼び出してオウム返しする。
-GetPlan は呼ばれてたクライアントだけに、Update は全てのクライアントに Updated を呼び出します。
+Update が呼ばれると、計画と実績を更新し、Updated を呼び出してオウム返しする。
+GetPlan は呼ばれたクライアントだけに、Update は全てのクライアントに Updated を呼び出します。
 
 後は、Startup クラスを作って、SigralR が機能するようにしたりしますが、ほぼ定型的な作業です。
 
